@@ -437,18 +437,15 @@ fi
 disown
 ```
 
-> 실행 방법
 ```bash
 # 실행 권한 부여
 chmod 770 check_modify.sh
+chmod 770 check_modify_scp.sh
 
 # 감시 시작 (예: Jenkins 아이템 이름이 step03_teamArt 인 경우)
 ./check_modify.sh step03_teamArt
 ```
 
----
-
-### ✅ 요약
 - Jenkins에서 **빌드 → scp 전송**이 이뤄지면,  
 - WAS 서버에서 동작하는 **감시 스크립트**가 이를 감지하여 **기존 애플리케이션을 종료하고 최신 JAR로 재실행**한다.
 
