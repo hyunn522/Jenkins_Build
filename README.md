@@ -1,4 +1,4 @@
-# 🚀 Jenkins CICD
+# 🚀 Jenkins CI/CD
 
 ## 🎯 프로젝트 목적
 
@@ -128,7 +128,7 @@ docker run --name myjenkins   -v /home/vboxuser/hostvol:/var/jenkins_home/worksp
 
 ---
 
-## 3️⃣ Jenkins Project (Pipeline) 생성
+## 3️⃣ Jenkins Pipeline 생성
 
 ```groovy
 pipeline {
@@ -176,9 +176,9 @@ pipeline {
 ## 4️⃣ GitHub Webhook 설정
 
 ### 🔔 Webhook이란?
-> 특정 이벤트(GitHub push, Jenkins 빌드 완료 등)가 발생했을 때  
-> 미리 정한 URL로 **자동 HTTP 요청을 보내는 방식**  
-> 이벤트 기반 자동화로, 주기적인 확인(polling) 없이 실시간 처리가 가능  
+> GitHub push 등 특정 이벤트 발생 시, 지정된 URL로 **자동 HTTP 요청을 보내는 방식**  
+> 주기적 확인 없이 실시간 자동화가 가능하다.
+
 
 ### a. GitHub 저장소 Webhook 등록
 <img width="1853" alt="webhook" src="https://github.com/user-attachments/assets/8e9d48b9-d5d2-4fcd-9349-8f9773b4ceeb" />
@@ -195,11 +195,15 @@ pipeline {
 ### 1. ngrok 실행
 ```bash
 ngrok http 8080
+
+# ngrok http <특정 IP>:<특정 포트>
+# 로컬호스트(127.0.0.1) IP를 지정해 외부 공개 가능
 ```
+
 - Jenkins의 8080 포트를 외부로 노출  
 - 실행 후 터미널에 발급된 URL 확인 가능  
 
-<img width="500" alt="ngrok1" src="https://github.com/user-attachments/assets/b40fcbc0-e000-4de5-b208-0da3aa5e7b68" />  
+<img width="500" alt="ngrok1" src="https://github.com/user-attachments/assets/b40fcbc0-e000-4de5-b208-0da3aa5e7b68" />  <br>
 ➡ ngrok 실행 후, Jenkins 8080 포트가 외부 주소로 매핑된 화면  
 
 ---
@@ -208,7 +212,7 @@ ngrok http 8080
 - `https://<랜덤ID>.ngrok.io` 형태의 주소가 발급됨  
 - 이 URL을 **GitHub Webhook Payload URL**에 등록  
 
-<img width="500" alt="ngrok2" src="https://github.com/user-attachments/assets/9d805dd0-f40d-4ae8-84bf-af0cd5a304a7" />  
+<img width="500" alt="ngrok2" src="https://github.com/user-attachments/assets/9d805dd0-f40d-4ae8-84bf-af0cd5a304a7" />  <br>
 ➡ ngrok에서 발급한 외부 접근용 URL 확인  
 
 ---
@@ -217,18 +221,15 @@ ngrok http 8080
 - 발급받은 ngrok 주소로 접속하면 Jenkins 로그인 화면이 나옴  
 - 외부에서도 정상 접근 가능한지 확인 후 Webhook에 등록  
 
-<img width="500" alt="ngrok3" src="https://github.com/user-attachments/assets/28473f4a-205e-458e-83e3-1899a493a3ad" />  
+<img width="500" alt="ngrok3" src="https://github.com/user-attachments/assets/28473f4a-205e-458e-83e3-1899a493a3ad" />  <br>
 ➡ ngrok URL을 통해 Jenkins 로그인 페이지에 접속된 모습  
 
 ---
 
 ## 5️⃣ 자동화 환경 구성
 
-<img width="6448" height="3080" alt="image (4)" src="https://github.com/user-attachments/assets/53cfe364-7fcf-41d8-9c1d-064d4fbe472c" />
 
-
-
-### a. inotifywait 스크립트
+### inotifywait 스크립트
 ```bash
 #!/bin/bash
 
@@ -259,18 +260,20 @@ while read -r events file; do
 done
 ```
 
-### ✅ 결론
-
 이 스크립트를 통해 **Jenkins 빌드 → JAR 파일 갱신 → 자동 실행**이 완성된다.  
-즉, 코드를 **GitHub에 push**하는 순간부터  
-애플리케이션이 자동으로 **빌드·실행**되는 **CI/CD 파이프라인**을 구축할 수 있다.
+즉, 코드를 **GitHub에 push**하는 순간부터 애플리케이션이 자동으로 **빌드·실행**된다.
 
 ---
 
 ## 6️⃣ 네트워크 & 서버 통신
 
-CI/CD 환경을 단일 서버에서 멀티 서버 구조로 확장하기 위해  
-**서버 분리 → 네트워크 및 IP 설정 → SSH key 생성 및 추가 → 자동화 스크립트 적용** 단계를 거쳤다.
+단일 서버에서 동작하던 환경을 확장하여,  
+**빌드 서버(Jenkins)와 실행 서버(WAS)를 분리한 멀티 서버 구조**로 발전시켰다.  
+
+
+<img width="6448" height="3080" alt="image (4)" src="https://github.com/user-attachments/assets/53cfe364-7fcf-41d8-9c1d-064d4fbe472c" />
+
+구축 과정은 **서버 분리 → 네트워크 및 IP 설정 → SSH key 생성 및 추가 → 자동화 스크립트 적용** 단계를 통해 진행되었다.
 
 ---
 
@@ -326,7 +329,7 @@ sudo netplan apply
 ip a
 ```
 
-→ 위 내용을 jenkins server와 was server에서 반복 (was는 192.168.0.8)
+→ 위 내용을 jenkins server와 WAS server에 적용 (WAS server IP: 192.168.0.8)
 
 ---
 
